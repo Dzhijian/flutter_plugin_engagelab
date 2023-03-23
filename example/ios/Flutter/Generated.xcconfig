@@ -1,14 +1,14 @@
 // This is a generated file; do not edit or check into version control.
-FLUTTER_ROOT=/Users/weiruiyang/tool/flutter
-FLUTTER_APPLICATION_PATH=/Users/weiruiyang/工作/code/demo/flutter_plugin_engagelab/example
+FLUTTER_ROOT=/Users/james/fvm/versions/3.3.4
+FLUTTER_APPLICATION_PATH=/Users/james/Desktop/aplink-app-flutter/plugins/push-flutter-plugin-main 3/example
 COCOAPODS_PARALLEL_CODE_SIGN=true
-FLUTTER_TARGET=/Users/weiruiyang/工作/code/demo/flutter_plugin_engagelab/example/lib/main.dart
+FLUTTER_TARGET=lib/main.dart
 FLUTTER_BUILD_DIR=build
 FLUTTER_BUILD_NAME=1.0.0
 FLUTTER_BUILD_NUMBER=1
 EXCLUDED_ARCHS[sdk=iphonesimulator*]=i386
-DART_DEFINES=Zmx1dHRlci5pbnNwZWN0b3Iuc3RydWN0dXJlZEVycm9ycz10cnVl,RkxVVFRFUl9XRUJfQVVUT19ERVRFQ1Q9dHJ1ZQ==
+EXCLUDED_ARCHS[sdk=iphoneos*]=armv7
 DART_OBFUSCATION=false
 TRACK_WIDGET_CREATION=true
 TREE_SHAKE_ICONS=false
-PACKAGE_CONFIG=/Users/weiruiyang/工作/code/demo/flutter_plugin_engagelab/example/.dart_tool/package_config.json
+PACKAGE_CONFIG=.dart_tool/package_config.json
