@@ -364,7 +364,7 @@ NSDictionary *_completeLaunchNotification;
     extras[key] = dic[key];
   }
   NSMutableDictionary *formatDic = dic.mutableCopy;
-  formatDic[@"extras"] = extras;
+//  formatDic[@"extras"] = extras;
   return formatDic;
 }
 
