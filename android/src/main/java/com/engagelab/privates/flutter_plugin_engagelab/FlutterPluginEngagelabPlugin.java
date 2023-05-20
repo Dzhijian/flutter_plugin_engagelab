@@ -13,9 +13,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.MethodCall;
@@ -100,16 +104,48 @@ public class FlutterPluginEngagelabPlugin implements FlutterPlugin, MethodCallHa
 
     private static boolean DEBUG = false;
 
+    private static List<CommonReceiverCache> onCommonReceiverCache = new ArrayList<CommonReceiverCache>();
 
-    public static void onCommonReceiver(String name, String data) {
+    public static synchronized void onCommonReceiver(String name, String data) {
         logD(TAG, "onCommonReceiver name =" + name);
         logD(TAG, "onCommonReceiver data =" + data);
+        logD(TAG, "onCommonReceiver instance =" + instance);
         if (null != instance){
 
             Map<String, String> dataJosn = new HashMap<>();
             dataJosn.put("event_name", name);
             dataJosn.put("event_data", data);
             instance.channel.invokeMethod("onMTCommonReceiver", dataJosn);
+        } else {
+            onCommonReceiverCache.add(new CommonReceiverCache(name, data));
+        }
+    }
+    private static synchronized void sendCommonReceiverCache() {
+        if (!onCommonReceiverCache.isEmpty()) {
+            logD(TAG, "sendCommonReceiverCache:" + onCommonReceiverCache.size());
+            for (CommonReceiverCache c : onCommonReceiverCache) {
+                onCommonReceiver(c.getName(), c.getData());
+            }
+            onCommonReceiverCache.clear();
+        }
+    }
+
+
+    private static class CommonReceiverCache {
+        private String name;
+        private String data;
+
+        public CommonReceiverCache(String name, String data) {
+            this.name = name;
+            this.data = data;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getData() {
+            return data;
         }
     }
 
@@ -251,6 +287,7 @@ public class FlutterPluginEngagelabPlugin implements FlutterPlugin, MethodCallHa
             logD(TAG, "init");
             Context context = getApplicationContext();
             MTPushPrivatesApi.init(context);
+            sendCommonReceiverCache();
         } catch (Throwable e) {
             e.printStackTrace();
         }
@@ -665,6 +702,137 @@ public class FlutterPluginEngagelabPlugin implements FlutterPlugin, MethodCallHa
             e.printStackTrace();
         }
     }
+
+
+    void addTags(JSONArray data, Result result) {
+        int sequence = -1;
+        Set<String> tags = new HashSet<String>();
+
+        try {
+            String string = data.getString(0);
+            JSONObject params = new JSONObject(string);
+            sequence = params.getInt("sequence");
+            JSONArray tagsArr = params.getJSONArray("tags");
+            for (int i = 0; i < tagsArr.length(); i++) {
+                tags.add(tagsArr.getString(i));
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return;
+        }
+        String[] toArray = tags.toArray(new String[tags.size()]);
+        MTPushPrivatesApi.addTag(getApplicationContext(), sequence, toArray);
+    }
+
+    void deleteTags(JSONArray data, Result result) {
+        int sequence = -1;
+        Set<String> tags = new HashSet<String>();
+
+        try {
+            String string = data.getString(0);
+            JSONObject params = new JSONObject(string);
+            sequence = params.getInt("sequence");
+
+            JSONArray tagsArr = params.getJSONArray("tags");
+            for (int i = 0; i < tagsArr.length(); i++) {
+                tags.add(tagsArr.getString(i));
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return;
+        }
+        String[] toArray = tags.toArray(new String[tags.size()]);
+        MTPushPrivatesApi.deleteTag(getApplicationContext(), sequence, toArray);
+    }
+
+    void updateTags(JSONArray data, Result result) {
+        int sequence = -1;
+        Set<String> tags = new HashSet<String>();
+
+        try {
+            String string = data.getString(0);
+            JSONObject params = new JSONObject(string);
+            sequence = params.getInt("sequence");
+
+            JSONArray tagsArr = params.getJSONArray("tags");
+            for (int i = 0; i < tagsArr.length(); i++) {
+                tags.add(tagsArr.getString(i));
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return;
+        }
+        String[] toArray = tags.toArray(new String[tags.size()]);
+        MTPushPrivatesApi.updateTag(getApplicationContext(), sequence, toArray);
+    }
+
+    void queryTag(JSONArray data, Result result) {
+
+        int sequence = -1;
+        String tag = "";
+
+        try {
+            String string = data.getString(0);
+            JSONObject params = new JSONObject(string);
+            sequence = params.getInt("sequence");
+            tag = params.getString("tag");
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return;
+        }
+        MTPushPrivatesApi.queryTag(getApplicationContext(), sequence, tag);
+    }
+
+    void deleteAllTag(JSONArray data, Result result) {
+        try {
+            int sequence = data.getInt(0);
+            MTPushPrivatesApi.deleteAllTag(getApplicationContext(), sequence);
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+    }
+
+    void queryAllTag(JSONArray data, Result result) {
+        try {
+            int sequence = data.getInt(0);
+            MTPushPrivatesApi.queryAllTag(getApplicationContext(), sequence);
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+    }
+
+    void setAlias(JSONArray data, Result result) {
+        try {
+            int sequence = data.getInt(0);
+            String alias = data.getString(1);
+            MTPushPrivatesApi.setAlias(getApplicationContext(), sequence, alias);
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+    }
+
+    void getAlias(JSONArray data, Result result) {
+        try {
+            int sequence = data.getInt(0);
+            MTPushPrivatesApi.getAlias(getApplicationContext(), sequence);
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+    }
+
+    void clearAlias(JSONArray data, Result result) {
+        try {
+            int sequence = data.getInt(0);
+            MTPushPrivatesApi.clearAlias(getApplicationContext(), sequence);
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+    }
+
 
 
     public static void logD(String tag, String msg) {
